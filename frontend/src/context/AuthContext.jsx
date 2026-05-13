@@ -87,6 +87,24 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const updateProfile = async (body) => {
+  try {
+
+    const { data } = await axios.put(
+      "/api/auth/update-profile",
+      body
+    );
+
+    if (data.success) {
+      setAuthUser(data.user);
+      toast.success("Profile updated");
+    }
+
+  } catch (err) {
+    toast.error(err.message);
+  }
+};
+
   // ================= SOCKET =================
   const connectSocket = (userData) => {
     if (!userData?._id) return;
@@ -130,6 +148,7 @@ export const AuthProvider = ({ children }) => {
         socket,
         login,
         logout,
+        updateProfile
       }}
     >
       {children}

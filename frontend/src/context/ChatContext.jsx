@@ -60,27 +60,12 @@ export const ChatProvider = ({ children }) => {
     }
   };
 
-  // EDIT
-  const editMessage = async (id, text) => {
-    try {
-      const { data } = await axios.put(`/api/messages/edit/${id}`, {
-        text,
-      });
-
-      if (data.success) {
-        setMessages((prev) =>
-          prev.map((m) => (m._id === id ? data.updatedMessage : m))
-        );
-      }
-    } catch (err) {
-      toast.error(err.message);
-    }
-  };
+  
 
   // DELETE
   const deleteMessage = async (id) => {
     try {
-      const { data } = await axios.delete(`/api/messages/${id}`);
+      const { data } = await axios.delete(`/api/messages/delete/${id}`);
 
       if (data.success) {
         setMessages((prev) => prev.filter((m) => m._id !== id));
@@ -111,6 +96,7 @@ export const ChatProvider = ({ children }) => {
         selectedUser,
         setSelectedUser,
         unseenMessages,
+        setUnseenMessages,
         getUsers,
         getMessages,
         sendMessage,
