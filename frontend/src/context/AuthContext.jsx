@@ -17,7 +17,7 @@ export const AuthProvider = ({ children }) => {
   const [onlineUsers, setOnlineUsers] = useState([]);
   const [socket, setSocket] = useState(null);
 
-  // SET HEADER
+  // ================= HEADER SET =================
   const setAuthHeader = (tok) => {
     if (tok) {
       axios.defaults.headers.common["Authorization"] = `Bearer ${tok}`;
@@ -26,53 +26,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // CHECK AUTH
-  const checkAuth = async () => {
-    if (!token) return;
-
-    try {
-      const { data } = await axios.get("/api/auth/check", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (data.success) {
-        setAuthUser(data.user);
-        connectSocket(data.user);
-      } else {
-        logout();
-      }
-    } catch (err) {
-      console.log("Auth check failed:", err.response?.data);
-      logout(); // 🔥 important fix
-    }
-  };
-
-  // LOGIN
-  const login = async (state, credentials) => {
-    try {
-      const { data } = await axios.post(`/api/auth/${state}`, credentials);
-
-      if (data.success) {
-        setToken(data.token);
-        localStorage.setItem("token", data.token);
-
-        setAuthHeader(data.token);
-
-        setAuthUser(data.user);
-        connectSocket(data.user);
-
-        toast.success(data.message);
-      } else {
-        toast.error(data.message);
-      }
-    } catch (err) {
-      toast.error(err.message);
-    }
-  };
-
-  // LOGOUT
+  // ================= LOGOUT =================
   const logout = () => {
     localStorage.removeItem("token");
 
@@ -88,7 +42,52 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // SOCKET
+  // ================= CHECK AUTH =================
+  const checkAuth = async () => {
+    try {
+      if (!token) return;
+
+      const { data } = await axios.get("/api/auth/check");
+
+      if (data.success) {
+        setAuthUser(data.user);
+        connectSocket(data.user);
+      } else {
+        logout();
+      }
+    } catch (err) {
+      console.log("Auth check failed:", err.response?.data);
+      logout(); // 🔥 auto cleanup invalid token
+    }
+  };
+
+  // ================= LOGIN =================
+  const login = async (state, credentials) => {
+    try {
+      const { data } = await axios.post(
+        `/api/auth/${state}`,
+        credentials
+      );
+
+      if (data.success) {
+        setToken(data.token);
+        localStorage.setItem("token", data.token);
+
+        setAuthHeader(data.token);
+
+        setAuthUser(data.user);
+        connectSocket(data.user);
+
+        toast.success(data.message);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.message || err.message);
+    }
+  };
+
+  // ================= SOCKET =================
   const connectSocket = (userData) => {
     if (!userData?._id) return;
     if (socket?.connected) return;
@@ -98,19 +97,40 @@ export const AuthProvider = ({ children }) => {
       transports: ["websocket"],
     });
 
-    newSocket.on("getOnlineUsers", setOnlineUsers);
+    newSocket.on("connect", () => {
+      console.log("Socket connected:", newSocket.id);
+    });
+
+    newSocket.on("getOnlineUsers", (users) => {
+      setOnlineUsers(users);
+    });
+
+    newSocket.on("disconnect", () => {
+      console.log("Socket disconnected");
+    });
 
     setSocket(newSocket);
   };
 
+  // ================= INIT =================
   useEffect(() => {
     setAuthHeader(token);
-    if (token) checkAuth();
+
+    if (token) {
+      checkAuth();
+    }
   }, [token]);
 
   return (
     <AuthContext.Provider
-      value={{ axios, authUser, onlineUsers, socket, login, logout }}
+      value={{
+        axios,
+        authUser,
+        onlineUsers,
+        socket,
+        login,
+        logout,
+      }}
     >
       {children}
     </AuthContext.Provider>
