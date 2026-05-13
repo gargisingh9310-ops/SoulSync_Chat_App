@@ -18,13 +18,15 @@ export const AuthProvider = ({ children }) => {
   const [onlineUsers, setOnlineUsers] = useState([]);
   const [socket, setSocket] = useState(null);
 
-  // CHECK AUTH
+  // ================= CHECK AUTH =================
   const checkAuth = async () => {
     try {
       if (!token) return;
 
       const { data } = await axios.get("/api/auth/check", {
-        headers: { token }
+        headers: {
+          Authorization: `Bearer ${token}`   // ✅ FIXED
+        }
       });
 
       if (data.success) {
@@ -34,12 +36,12 @@ export const AuthProvider = ({ children }) => {
         setAuthUser(null);
       }
     } catch (error) {
-      console.log(error.message);
+      console.log(error.response?.data || error.message);
       setAuthUser(null);
     }
   };
 
-  // LOGIN / SIGNUP
+  // ================= LOGIN =================
   const login = async (state, credentials) => {
     try {
       const { data } = await axios.post(
@@ -48,12 +50,15 @@ export const AuthProvider = ({ children }) => {
       );
 
       if (data.success) {
+
         setAuthUser(data.user);
 
         setToken(data.token);
         localStorage.setItem("token", data.token);
 
-        axios.defaults.headers.common["token"] = data.token;
+        // ✅ FIXED HEADER FORMAT
+        axios.defaults.headers.common["Authorization"] =
+          `Bearer ${data.token}`;
 
         connectSocket(data.user);
 
@@ -61,12 +66,13 @@ export const AuthProvider = ({ children }) => {
       } else {
         toast.error(data.message);
       }
+
     } catch (error) {
       toast.error(error.message);
     }
   };
 
-  // LOGOUT
+  // ================= LOGOUT =================
   const logout = () => {
     try {
       localStorage.removeItem("token");
@@ -75,7 +81,7 @@ export const AuthProvider = ({ children }) => {
       setAuthUser(null);
       setOnlineUsers([]);
 
-      delete axios.defaults.headers.common["token"];
+      delete axios.defaults.headers.common["Authorization"]; // ✅ FIXED
 
       if (socket) {
         socket.disconnect();
@@ -83,12 +89,13 @@ export const AuthProvider = ({ children }) => {
       }
 
       toast.success("Logged out successfully");
+
     } catch (error) {
       console.log(error.message);
     }
   };
 
-  // UPDATE PROFILE
+  // ================= UPDATE PROFILE =================
   const updateProfile = async (body) => {
     try {
       const { data } = await axios.put(
@@ -105,17 +112,14 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // SOCKET CONNECT
+  // ================= SOCKET CONNECT =================
   const connectSocket = (userData) => {
     if (!userData?._id) return;
 
-    // prevent duplicate sockets
     if (socket?.connected) return;
 
     const newSocket = io(backendUrl, {
-      query: {
-        userId: userData._id
-      },
+      query: { userId: userData._id },
       transports: ["websocket"],
       withCredentials: true
     });
@@ -135,10 +139,12 @@ export const AuthProvider = ({ children }) => {
     setSocket(newSocket);
   };
 
-  // INIT AUTH
+  // ================= INIT =================
   useEffect(() => {
     if (token) {
-      axios.defaults.headers.common["token"] = token;
+      axios.defaults.headers.common["Authorization"] =
+        `Bearer ${token}`;   // ✅ FIXED
+
       checkAuth();
     }
   }, [token]);
