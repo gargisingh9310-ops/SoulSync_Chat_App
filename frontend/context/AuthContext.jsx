@@ -18,6 +18,15 @@ export const AuthProvider = ({ children }) => {
   const [onlineUsers, setOnlineUsers] = useState([]);
   const [socket, setSocket] = useState(null);
 
+  // ================= TOKEN SETTER =================
+  const setAuthHeader = (tok) => {
+    if (tok) {
+      axios.defaults.headers.common["Authorization"] = `Bearer ${tok}`;
+    } else {
+      delete axios.defaults.headers.common["Authorization"];
+    }
+  };
+
   // ================= CHECK AUTH =================
   const checkAuth = async () => {
     try {
@@ -25,7 +34,7 @@ export const AuthProvider = ({ children }) => {
 
       const { data } = await axios.get("/api/auth/check", {
         headers: {
-          Authorization: `Bearer ${token}`   // ✅ FIXED
+          Authorization: `Bearer ${token}`
         }
       });
 
@@ -35,6 +44,7 @@ export const AuthProvider = ({ children }) => {
       } else {
         setAuthUser(null);
       }
+
     } catch (error) {
       console.log(error.response?.data || error.message);
       setAuthUser(null);
@@ -44,6 +54,7 @@ export const AuthProvider = ({ children }) => {
   // ================= LOGIN =================
   const login = async (state, credentials) => {
     try {
+
       const { data } = await axios.post(
         `/api/auth/${state}`,
         credentials
@@ -56,13 +67,12 @@ export const AuthProvider = ({ children }) => {
         setToken(data.token);
         localStorage.setItem("token", data.token);
 
-        // ✅ FIXED HEADER FORMAT
-        axios.defaults.headers.common["Authorization"] =
-          `Bearer ${data.token}`;
+        setAuthHeader(data.token); // ✅ FIX
 
         connectSocket(data.user);
 
         toast.success(data.message);
+
       } else {
         toast.error(data.message);
       }
@@ -75,13 +85,14 @@ export const AuthProvider = ({ children }) => {
   // ================= LOGOUT =================
   const logout = () => {
     try {
+
       localStorage.removeItem("token");
 
       setToken(null);
       setAuthUser(null);
       setOnlineUsers([]);
 
-      delete axios.defaults.headers.common["Authorization"]; // ✅ FIXED
+      setAuthHeader(null); // ✅ FIX
 
       if (socket) {
         socket.disconnect();
@@ -98,6 +109,7 @@ export const AuthProvider = ({ children }) => {
   // ================= UPDATE PROFILE =================
   const updateProfile = async (body) => {
     try {
+
       const { data } = await axios.put(
         "/api/auth/update-profile",
         body
@@ -107,6 +119,7 @@ export const AuthProvider = ({ children }) => {
         setAuthUser(data.user);
         toast.success("Profile updated successfully");
       }
+
     } catch (error) {
       toast.error(error.message);
     }
@@ -142,8 +155,7 @@ export const AuthProvider = ({ children }) => {
   // ================= INIT =================
   useEffect(() => {
     if (token) {
-      axios.defaults.headers.common["Authorization"] =
-        `Bearer ${token}`;   // ✅ FIXED
+      setAuthHeader(token); // ✅ IMPORTANT
 
       checkAuth();
     }
