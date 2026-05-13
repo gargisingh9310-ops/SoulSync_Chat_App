@@ -1,341 +1,138 @@
-/* =========================
-   HOME CONTAINER
-========================= */
-.home-container {
-  width: 100%;
-  min-height: 100vh;
+/* ===== HOME PAGE ===== */
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  padding: 18px;
-
-  overflow: hidden;
-
-  position: relative;
-}
-
-/* =========================
-   MAIN CHAT WINDOW
-========================= */
-.chat-window {
-  width: 100%;
-  max-width: 1600px;
-
-  height: 94vh;
-  min-height: 650px;
-
-  display: flex;
-
-  overflow: hidden;
-  position: relative;
-
-  border-radius: 28px;
-
-  background:
-    linear-gradient(
-      135deg,
-      rgba(15, 23, 42, 0.96),
-      rgba(17, 24, 39, 0.95)
-    );
-
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-
-  border: 1px solid rgba(255, 255, 255, 0.08);
-
-  box-shadow:
-    0 30px 80px rgba(0, 0, 0, 0.45),
-    inset 0 1px 0 rgba(255,255,255,0.04);
-}
-
-/* subtle glow */
-.chat-window::before {
-  content: "";
-
-  position: absolute;
-  inset: 0;
-
-  background:
-    radial-gradient(
-      circle at top left,
-      rgba(102,126,234,0.12),
-      transparent 30%
-    ),
-    radial-gradient(
-      circle at bottom right,
-      rgba(118,75,162,0.12),
-      transparent 30%
-    );
-
-  pointer-events: none;
-}
-
-/* =========================
-   SIDEBAR
-========================= */
-.sidebar-col {
-  width: 320px;
-  min-width: 320px;
-
-  height: 100%;
-
-  display: flex;
-  flex-direction: column;
-
-  position: relative;
-  z-index: 2;
-
-  background:
-    rgba(255,255,255,0.03);
-
-  border-right:
-    1px solid rgba(255,255,255,0.07);
-
-  transition: 0.3s ease;
-}
-
-/* sidebar glass effect */
-.sidebar-col::after {
-  content: "";
-
-  position: absolute;
-  top: 0;
-  right: 0;
-
-  width: 1px;
-  height: 100%;
-
-  background:
-    linear-gradient(
-      to bottom,
-      transparent,
-      rgba(255,255,255,0.12),
-      transparent
-    );
-}
-
-/* =========================
-   CHAT AREA
-========================= */
-.chat-container-col {
-  flex: 1;
-
-  height: 100%;
-
-  display: flex;
-  flex-direction: column;
-
-  position: relative;
-  z-index: 1;
-
-  background:
-    rgba(255,255,255,0.015);
-
-  overflow: hidden;
-}
-
-/* =========================
-   RIGHT PANEL
-========================= */
-.right-container-col {
-  width: 350px;
-  min-width: 350px;
-
-  height: 100%;
-
-  display: flex;
-  flex-direction: column;
-
-  position: relative;
-  z-index: 2;
-
-  background:
-    rgba(255,255,255,0.025);
-
-  border-left:
-    1px solid rgba(255,255,255,0.07);
-
-  transition: 0.35s ease;
-}
-
-/* glow line */
-.right-container-col::before {
-  content: "";
-
-  position: absolute;
-  top: 0;
-  left: 0;
-
-  width: 1px;
-  height: 100%;
-
-  background:
-    linear-gradient(
-      to bottom,
-      transparent,
-      rgba(255,255,255,0.12),
-      transparent
-    );
-}
-
-/* =========================
-   LARGE LAPTOP
-========================= */
-@media (max-width: 1400px) {
-
-  .sidebar-col {
-    width: 300px;
-    min-width: 300px;
-  }
-
-  .right-container-col {
-    width: 320px;
-    min-width: 320px;
-  }
-}
-
-/* =========================
-   LAPTOP
-========================= */
-@media (max-width: 1200px) {
-
-  .home-container {
-    padding: 14px;
-  }
-
-  .chat-window {
-    height: 95vh;
-  }
-
-  .sidebar-col {
-    width: 270px;
-    min-width: 270px;
-  }
-
-  .right-container-col {
-    width: 280px;
-    min-width: 280px;
-  }
-}
-
-/* =========================
-   TABLET
-========================= */
-@media (max-width: 992px) {
-
-  .home-container {
-    padding: 10px;
-  }
-
-  .chat-window {
-    border-radius: 22px;
-  }
-
-  /* hide right panel */
-  .right-container-col {
-    display: none;
-  }
-
-  .sidebar-col {
-    width: 250px;
-    min-width: 250px;
-  }
-}
-
-/* =========================
-   SMALL TABLET
-========================= */
-@media (max-width: 768px) {
-
-  .home-container {
-    padding: 0;
-  }
-
-  .chat-window {
+.home-container{
     width: 100%;
-    height: 100vh;
-
-    border-radius: 0;
-
     min-height: 100vh;
-  }
-
-  .sidebar-col {
-    width: 85px;
-    min-width: 85px;
-
+    padding: 20px;
+    display: flex;
+    justify-content: center;
     align-items: center;
-  }
-
-  .chat-container-col {
-    flex: 1;
-  }
 }
 
-/* =========================
-   MOBILE
-========================= */
-@media (max-width: 640px) {
+/* ===== MAIN CHAT WINDOW ===== */
 
-  .home-container {
+.chat-window{
     width: 100%;
-    height: 100%;
-  }
+    max-width: 1500px;
+    height: 95vh;
 
-  .chat-window {
-    width: 100%;
-    height: 100vh;
+    display: grid;
+    grid-template-columns: 320px 1fr 320px;
 
-    border: none;
+    background: rgba(15, 23, 42, 0.75);
+    backdrop-filter: blur(18px);
 
-    box-shadow: none;
-  }
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 24px;
 
-  .sidebar-col {
-    width: 72px;
-    min-width: 72px;
+    overflow: hidden;
 
-    padding: 10px 0;
-  }
+    box-shadow:
+        0 10px 40px rgba(0,0,0,0.35);
 }
 
-/* =========================
-   EXTRA SMALL MOBILE
-========================= */
-@media (max-width: 480px) {
+/* ===== SIDEBAR ===== */
 
-  .sidebar-col {
-    width: 65px;
-    min-width: 65px;
-  }
-
-  .chat-window {
-    background:
-      linear-gradient(
-        180deg,
-        rgba(15,23,42,0.98),
-        rgba(17,24,39,0.98)
-      );
-  }
+.sidebar-col{
+    border-right: 1px solid rgba(255,255,255,0.08);
+    overflow: hidden;
+    background: rgba(255,255,255,0.02);
 }
 
-/* =========================
-   LANDSCAPE MOBILE FIX
-========================= */
-@media (max-height: 600px) and (orientation: landscape) {
+/* ===== CHAT CONTAINER ===== */
 
-  .chat-window {
-    height: 100vh;
-  }
+.chat-container-col{
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
 
-  .sidebar-col {
-    width: 70px;
-    min-width: 70px;
-  }
+/* ===== RIGHT CONTAINER ===== */
 
-  .right-container-col {
-    display: none;
-  }
+.right-container-col{
+    border-left: 1px solid rgba(255,255,255,0.08);
+    overflow: hidden;
+    background: rgba(255,255,255,0.02);
+}
+
+/* ================================= */
+/* ========== LAPTOP =============== */
+/* ================================= */
+
+@media (max-width: 1200px){
+
+    .chat-window{
+        grid-template-columns: 280px 1fr 280px;
+    }
+
+}
+
+/* ================================= */
+/* ========== TABLET =============== */
+/* ================================= */
+
+@media (max-width: 992px){
+
+    .home-container{
+        padding: 12px;
+    }
+
+    .chat-window{
+        height: 96vh;
+        grid-template-columns: 260px 1fr;
+    }
+
+    .right-container-col{
+        display: none;
+    }
+
+}
+
+/* ================================= */
+/* ========== MOBILE =============== */
+/* ================================= */
+
+@media (max-width: 768px){
+
+    .home-container{
+        padding: 0;
+    }
+
+    .chat-window{
+        width: 100%;
+        height: 100vh;
+
+        border-radius: 0;
+
+        display: flex;
+        flex-direction: column;
+    }
+
+    .sidebar-col{
+        width: 100%;
+        height: auto;
+        border-right: none;
+    }
+
+    .chat-container-col{
+        flex: 1;
+        width: 100%;
+    }
+
+    .right-container-col{
+        display: none;
+    }
+
+}
+
+/* ================================= */
+/* ========= SMALL MOBILE ========== */
+/* ================================= */
+
+@media (max-width: 480px){
+
+    .chat-window{
+        height: 100vh;
+    }
+
 }

@@ -1,401 +1,144 @@
-/* =========================
-   GOOGLE FONTS
-========================= */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;700;800&display=swap');
+/* ===== GOOGLE FONT ===== */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
 
-/* =========================
-   RESET
-========================= */
-* {
+/* ===== RESET ===== */
+*{
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-html {
-  scroll-behavior: smooth;
-}
-
-img {
+html,
+body,
+#root{
   width: 100%;
-  display: block;
+  min-height: 100vh;
+  font-family: 'Poppins', sans-serif;
+  overflow-x: hidden;
 }
 
-button,
-input,
-textarea {
+/* ===== BODY ===== */
+body{
+  background: #0f172a;
+  color: white;
+}
+
+/* ===== APP MAIN CONTAINER ===== */
+.app-container{
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ===== COMMON FLEX ===== */
+.flex{
+  display: flex;
+  align-items: center;
+}
+
+.flex-center{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ===== BUTTON STYLE ===== */
+button{
+  border: none;
+  outline: none;
+  cursor: pointer;
+  transition: 0.3s ease;
   font-family: inherit;
 }
 
-/* =========================
-   ROOT VARIABLES
-========================= */
-:root {
-  --brand-dark: #0f172a;
-  --brand-dark-2: #111827;
-
-  --soul-purple: #764ba2;
-  --sync-indigo: #667eea;
-
-  --text-light: #f8fafc;
-  --text-soft: #cbd5e1;
-
-  --border-light: rgba(255, 255, 255, 0.12);
-
-  --card-bg: rgba(255, 255, 255, 0.06);
-
-  --shadow-main: 0 10px 40px rgba(0, 0, 0, 0.35);
-
-  --gradient-main: linear-gradient(
-    135deg,
-    #667eea 0%,
-    #764ba2 100%
-  );
-
-  --gradient-dark: linear-gradient(
-    135deg,
-    rgba(102, 126, 234, 0.12),
-    rgba(118, 75, 162, 0.12)
-  );
+button:hover{
+  opacity: 0.9;
+  transform: scale(1.02);
 }
 
-/* =========================
-   BODY
-========================= */
-body {
-  min-height: 100vh;
-  overflow-x: hidden;
-
-  font-family: "Inter", sans-serif;
-  color: var(--text-light);
-
-  background:
-    radial-gradient(circle at top left, rgba(118, 75, 162, 0.25), transparent 30%),
-    radial-gradient(circle at bottom right, rgba(102, 126, 234, 0.25), transparent 30%),
-    var(--brand-dark);
-
-  -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
-}
-
-/* =========================
-   HEADINGS
-========================= */
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-family: "Outfit", sans-serif;
-  letter-spacing: -0.03em;
-  line-height: 1.1;
-}
-
-p {
-  color: var(--text-soft);
-  line-height: 1.7;
-}
-
-/* =========================
-   CONTAINER
-========================= */
-.container {
-  width: 100%;
-  max-width: 1300px;
-  margin-inline: auto;
-  padding-inline: 24px;
-}
-
-@media (max-width: 768px) {
-  .container {
-    padding-inline: 16px;
-  }
-}
-
-/* =========================
-   GLASS CARD
-========================= */
-.glass-card {
-  background: var(--card-bg);
-  backdrop-filter: blur(22px);
-
-  -webkit-backdrop-filter: blur(22px);
-
-  border: 1px solid var(--border-light);
-
-  border-radius: 24px;
-
-  box-shadow: var(--shadow-main);
-
-  transition: 0.35s ease;
-}
-
-.glass-card:hover {
-  transform: translateY(-4px);
-  border-color: rgba(255, 255, 255, 0.18);
-}
-
-/* =========================
-   BUTTON
-========================= */
-.btn-soul {
-  cursor: pointer;
+/* ===== INPUT STYLE ===== */
+input,
+textarea{
+  outline: none;
   border: none;
-  outline: none;
-
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-
-  padding: 14px 32px;
-
-  border-radius: 14px;
-
-  background: var(--gradient-main);
-
-  color: white;
-  text-decoration: none;
-
-  font-size: 15px;
-  font-weight: 600;
-
-  transition: 0.3s ease;
-
-  box-shadow:
-    0 10px 25px rgba(102, 126, 234, 0.25);
+  font-family: inherit;
 }
 
-.btn-soul:hover {
-  transform: translateY(-3px) scale(1.01);
-
-  box-shadow:
-    0 15px 35px rgba(118, 75, 162, 0.35);
+input::placeholder,
+textarea::placeholder{
+  color: #9ca3af;
 }
 
-.btn-soul:active {
-  transform: scale(0.96);
+/* ===== IMAGE ===== */
+img{
+  max-width: 100%;
+  display: block;
 }
 
-/* Mobile Button Fix */
-@media (max-width: 480px) {
-  .btn-soul {
-    width: 100%;
-    padding: 14px 20px;
-    font-size: 14px;
-  }
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar{
+  width: 6px;
 }
 
-/* =========================
-   CHAT BUBBLE
-========================= */
-.chat-bubble-sync {
-  position: relative;
-
-  width: fit-content;
-  max-width: 75%;
-
-  padding: 16px 18px;
-
-  border-radius: 22px;
-
-  background: var(--gradient-main);
-
-  color: white;
-
-  overflow-wrap: break-word;
-  word-break: break-word;
-
-  box-shadow:
-    0 10px 25px rgba(0, 0, 0, 0.25);
-
-  animation: bubbleFade 0.3s ease;
-}
-
-/* Receiver Bubble Example */
-.chat-bubble-receiver {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255,255,255,0.08);
-}
-
-/* Mobile Bubble */
-@media (max-width: 768px) {
-  .chat-bubble-sync {
-    max-width: 90%;
-    font-size: 14px;
-    padding: 14px 16px;
-  }
-}
-
-/* =========================
-   INPUTS
-========================= */
-.input-soul {
-  width: 100%;
-
-  padding: 14px 16px;
-
-  border-radius: 14px;
-
-  border: 1px solid rgba(255,255,255,0.08);
-
-  background: rgba(255,255,255,0.06);
-
-  color: white;
-
-  outline: none;
-
-  transition: 0.3s ease;
-}
-
-.input-soul::placeholder {
-  color: #94a3b8;
-}
-
-.input-soul:focus {
-  border-color: #818cf8;
-
-  box-shadow:
-    0 0 0 4px rgba(129, 140, 248, 0.15);
-}
-
-/* =========================
-   FLEX HELPERS
-========================= */
-.flex {
-  display: flex;
-}
-
-.flex-center {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.flex-between {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.gap-1 {
-  gap: 10px;
-}
-
-.gap-2 {
-  gap: 20px;
-}
-
-/* =========================
-   RESPONSIVE GRID
-========================= */
-.grid-2 {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 24px;
-}
-
-.grid-3 {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
-}
-
-@media (max-width: 900px) {
-  .grid-2,
-  .grid-3 {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* =========================
-   ANIMATIONS
-========================= */
-@keyframes float {
-  0%,
-  100% {
-    transform: translateY(0px);
-  }
-
-  50% {
-    transform: translateY(-10px);
-  }
-}
-
-.animate-float {
-  animation: float 4s ease-in-out infinite;
-}
-
-@keyframes bubbleFade {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* =========================
-   SCROLLBAR
-========================= */
-::-webkit-scrollbar {
-  width: 7px;
-}
-
-::-webkit-scrollbar-track {
+::-webkit-scrollbar-track{
   background: transparent;
 }
 
-::-webkit-scrollbar-thumb {
-  background: rgba(255,255,255,0.14);
-  border-radius: 999px;
+::-webkit-scrollbar-thumb{
+  background: #64748b;
+  border-radius: 20px;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(255,255,255,0.22);
+/* ========================= */
+/* ===== RESPONSIVE ======== */
+/* ========================= */
+
+/* ===== LARGE LAPTOP ===== */
+@media (max-width: 1440px){
+
+  html{
+    font-size: 95%;
+  }
+
 }
 
-/* =========================
-   RESPONSIVE FIXES
-========================= */
-@media (max-width: 1024px) {
-  h1 {
-    font-size: 2.5rem;
+/* ===== LAPTOP ===== */
+@media (max-width: 1024px){
+
+  html{
+    font-size: 92%;
   }
+
 }
 
-@media (max-width: 768px) {
-  h1 {
-    font-size: 2rem;
+/* ===== TABLET ===== */
+@media (max-width: 768px){
+
+  html{
+    font-size: 88%;
   }
 
-  h2 {
-    font-size: 1.6rem;
-  }
-
-  p {
-    font-size: 14px;
-  }
-}
-
-@media (max-width: 480px) {
-  body {
+  body{
     overflow-x: hidden;
   }
 
-  h1 {
-    font-size: 1.7rem;
+}
+
+/* ===== MOBILE ===== */
+@media (max-width: 480px){
+
+  html{
+    font-size: 84%;
   }
 
-  h2 {
-    font-size: 1.4rem;
+  button{
+    font-size: 14px;
   }
 
-  .glass-card {
-    border-radius: 18px;
+  input,
+  textarea{
+    font-size: 14px;
   }
+
 }
