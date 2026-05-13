@@ -24,18 +24,20 @@ const ChatContainer = () => {
   const scrollEnd = useRef()
 
   const [input, setInput] = useState('')
-  const [sending, setSending] = useState(false) // ✅ LOCK ADDED
 
-  // SEND TEXT MESSAGE
+  // ✅ SUPER SAFE LOCK (NO RE-RENDER ISSUE)
+  const isSendingRef = useRef(false)
+
+  // ================= SEND TEXT =================
   const handleSendMessage = async (e) => {
     e?.preventDefault()
 
-    if (sending) return // ❌ prevent double click
+    if (isSendingRef.current) return
     if (input.trim() === "") return
 
-    try {
-      setSending(true)
+    isSendingRef.current = true
 
+    try {
       await sendMessage({
         text: input.trim()
       })
@@ -44,11 +46,11 @@ const ChatContainer = () => {
     } catch (err) {
       toast.error("Message failed")
     } finally {
-      setSending(false)
+      isSendingRef.current = false
     }
   }
 
-  // SEND IMAGE
+  // ================= SEND IMAGE =================
   const handleSendImage = async (e) => {
 
     const file = e.target.files[0]
@@ -61,29 +63,30 @@ const ChatContainer = () => {
     const reader = new FileReader()
 
     reader.onloadend = async () => {
-      if (sending) return // extra safety
 
-      setSending(true)
+      if (isSendingRef.current) return
+
+      isSendingRef.current = true
 
       await sendMessage({
         image: reader.result
       })
 
-      setSending(false)
+      isSendingRef.current = false
       e.target.value = ""
     }
 
     reader.readAsDataURL(file)
   }
 
-  // GET MESSAGES
+  // ================= GET MESSAGES =================
   useEffect(() => {
     if (selectedUser) {
       getMessages(selectedUser._id)
     }
   }, [selectedUser])
 
-  // AUTO SCROLL
+  // ================= AUTO SCROLL =================
   useEffect(() => {
     if (scrollEnd.current && messages) {
       scrollEnd.current.scrollIntoView({
@@ -211,10 +214,15 @@ const ChatContainer = () => {
             placeholder='Type a message...'
             value={input}
             onChange={(e) => setInput(e.target.value)}
+
             onKeyDown={(e) => {
-              if (e.key === "Enter" && !sending) {
-                handleSendMessage(e)
-              }
+              if (e.key !== "Enter") return;
+
+              e.preventDefault();
+
+              if (isSendingRef.current) return;
+
+              handleSendMessage(e);
             }}
           />
 
@@ -234,8 +242,10 @@ const ChatContainer = () => {
 
         <button
           className="send-button"
-          onClick={handleSendMessage}
-          disabled={sending}
+          onClick={(e) => {
+            e.preventDefault();
+            if (!isSendingRef.current) handleSendMessage(e);
+          }}
         >
           <img src={assets.send_button} alt="send" />
         </button>
