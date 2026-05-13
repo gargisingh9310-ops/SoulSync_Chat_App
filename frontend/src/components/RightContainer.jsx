@@ -1,8 +1,8 @@
 import React, { useContext, useMemo } from "react";
 import assets from "../assets/assets";
 import "../stylesheet/RightContainer.css";
-import { ChatContext } from "../../context/ChatContext";
-import { AuthContext } from "../../context/AuthContext";
+import { ChatContext } from "../context/ChatContext";
+import { AuthContext } from "../context/AuthContext";
 
 const RightContainer = () => {
   const { selectedUser, messages } = useContext(ChatContext);

@@ -5,7 +5,7 @@ import { Toaster } from "react-hot-toast";
 import './index.css'
 
 // Context & Assets
-import { AuthContext } from '../context/AuthContext';
+import { AuthContext } from './context/AuthContext';
 import assets from './assets/assets';
 
 // Pages
