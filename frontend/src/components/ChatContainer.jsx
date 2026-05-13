@@ -13,22 +13,20 @@ const ChatContainer = () => {
     selectedUser,
     setSelectedUser,
     sendMessage,
-    getMessages
+    getMessages,
+    editMessage,
+    deleteMessage
   } = useContext(ChatContext)
 
-  const {
-    authUser,
-    onlineUsers
-  } = useContext(AuthContext)
+  const { authUser, onlineUsers } = useContext(AuthContext)
 
   const scrollEnd = useRef()
-
-  const [input, setInput] = useState('')
-
-  // ✅ SUPER SAFE LOCK (NO RE-RENDER ISSUE)
   const isSendingRef = useRef(false)
 
-  // ================= SEND TEXT =================
+  const [input, setInput] = useState('')
+  const [editingId, setEditingId] = useState(null)
+
+  // ================= SEND =================
   const handleSendMessage = async (e) => {
     e?.preventDefault()
 
@@ -38,11 +36,19 @@ const ChatContainer = () => {
     isSendingRef.current = true
 
     try {
-      await sendMessage({
-        text: input.trim()
-      })
+
+      if (editingId) {
+
+        await editMessage(editingId, input.trim())
+        setEditingId(null)
+
+      } else {
+
+        await sendMessage({ text: input.trim() })
+      }
 
       setInput("")
+
     } catch (err) {
       toast.error("Message failed")
     } finally {
@@ -50,9 +56,14 @@ const ChatContainer = () => {
     }
   }
 
-  // ================= SEND IMAGE =================
-  const handleSendImage = async (e) => {
+  // ================= CANCEL EDIT =================
+  const cancelEdit = () => {
+    setEditingId(null)
+    setInput("")
+  }
 
+  // ================= IMAGE =================
+  const handleSendImage = async (e) => {
     const file = e.target.files[0]
 
     if (!file || !file.type.startsWith("image/")) {
@@ -63,14 +74,11 @@ const ChatContainer = () => {
     const reader = new FileReader()
 
     reader.onloadend = async () => {
-
       if (isSendingRef.current) return
 
       isSendingRef.current = true
 
-      await sendMessage({
-        image: reader.result
-      })
+      await sendMessage({ image: reader.result })
 
       isSendingRef.current = false
       e.target.value = ""
@@ -79,20 +87,14 @@ const ChatContainer = () => {
     reader.readAsDataURL(file)
   }
 
-  // ================= GET MESSAGES =================
+  // ================= LOAD MESSAGES =================
   useEffect(() => {
-    if (selectedUser) {
-      getMessages(selectedUser._id)
-    }
+    if (selectedUser) getMessages(selectedUser._id)
   }, [selectedUser])
 
   // ================= AUTO SCROLL =================
   useEffect(() => {
-    if (scrollEnd.current && messages) {
-      scrollEnd.current.scrollIntoView({
-        behavior: "smooth"
-      })
-    }
+    scrollEnd.current?.scrollIntoView({ behavior: "smooth" })
   }, [messages])
 
   return selectedUser ? (
@@ -106,29 +108,21 @@ const ChatContainer = () => {
 
           <img
             src={selectedUser?.profilePic || assets.avatar_icon}
-            alt=""
             className="header-avatar"
           />
 
           <div className="header-user-info">
-
             <p>{selectedUser.fullName}</p>
-
             <span className="status-text">
-              {
-                onlineUsers.includes(selectedUser._id)
-                  ? "Online"
-                  : "Offline"
-              }
+              {onlineUsers.includes(selectedUser._id) ? "Online" : "Offline"}
             </span>
-
           </div>
 
         </div>
 
         <div className="header-icons">
 
-          <img src={assets.help_icon} alt="help" />
+          <img src={assets.help_icon} alt="" />
 
           <img
             onClick={() => setSelectedUser(null)}
@@ -144,7 +138,7 @@ const ChatContainer = () => {
       {/* MESSAGES */}
       <div className="chat-messages">
 
-        {messages.map((message, index) => {
+        {messages.map((message) => {
 
           const isSender =
             message.senderId?.toString() === authUser?._id?.toString()
@@ -152,29 +146,38 @@ const ChatContainer = () => {
           return (
 
             <div
-              key={index}
+              key={message._id}
               className={`message-row ${isSender ? 'sender' : 'receiver'}`}
             >
 
               <div className="bubble-wrapper">
 
-                {
-                  message.image ? (
+                {/* CONTENT */}
+                {message.image ? (
+                  <img src={message.image} className="msg-img" />
+                ) : (
+                  <p className="msg-text">{message.text}</p>
+                )}
 
-                    <img
-                      src={message.image}
-                      alt="sent-file"
-                      className="msg-img"
-                    />
+                {/* ACTIONS */}
+                {isSender && (
+                  <div className="msg-actions">
 
-                  ) : (
+                    <button
+                      onClick={() => {
+                        setInput(message.text)
+                        setEditingId(message._id)
+                      }}
+                    >
+                      ✏️
+                    </button>
 
-                    <p className="msg-text">
-                      {message.text}
-                    </p>
+                    <button onClick={() => deleteMessage(message._id)}>
+                      🗑
+                    </button>
 
-                  )
-                }
+                  </div>
+                )}
 
                 <div className="msg-footer">
 
@@ -184,7 +187,6 @@ const ChatContainer = () => {
                         ? authUser?.profilePic || assets.avatar_icon
                         : selectedUser?.profilePic || assets.avatar_icon
                     }
-                    alt=""
                     className="msg-profile"
                   />
 
@@ -204,50 +206,44 @@ const ChatContainer = () => {
 
       </div>
 
-      {/* INPUT AREA */}
+      {/* INPUT */}
       <div className="chat-input-area">
 
         <div className="input-group">
 
           <input
             type="text"
-            placeholder='Type a message...'
+            placeholder={editingId ? "Edit message..." : "Type a message..."}
             value={input}
             onChange={(e) => setInput(e.target.value)}
-
             onKeyDown={(e) => {
-              if (e.key !== "Enter") return;
-
-              e.preventDefault();
-
-              if (isSendingRef.current) return;
-
-              handleSendMessage(e);
+              if (e.key === "Enter") handleSendMessage(e)
+              if (e.key === "Escape") cancelEdit()
             }}
           />
 
+          {/* cancel edit button */}
+          {editingId && (
+            <button className="cancel-edit" onClick={cancelEdit}>
+              ✖
+            </button>
+          )}
+
           <input
             type="file"
-            id='image'
-            accept='image/png, image/jpeg'
+            id="image"
             hidden
             onChange={handleSendImage}
           />
 
-          <label htmlFor="image" className="attachment-label">
-            <img src={assets.gallery_icon} alt="attach" />
+          <label htmlFor="image">
+            <img src={assets.gallery_icon} />
           </label>
 
         </div>
 
-        <button
-          className="send-button"
-          onClick={(e) => {
-            e.preventDefault();
-            if (!isSendingRef.current) handleSendMessage(e);
-          }}
-        >
-          <img src={assets.send_button} alt="send" />
+        <button onClick={handleSendMessage}>
+          <img src={assets.send_button} />
         </button>
 
       </div>
@@ -257,17 +253,11 @@ const ChatContainer = () => {
   ) : (
 
     <div className="welcome-screen">
-
-      <img
-        src={assets.logo_icon}
-        alt=""
-        className="welcome-logo"
-      />
-
+      <img src={assets.logo_icon} />
       <p>SoulSync: Connect Beyond Words</p>
-
     </div>
+
   )
 }
 
-export default ChatContainer
+export default ChatContainer;

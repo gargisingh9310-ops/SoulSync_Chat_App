@@ -7,12 +7,12 @@ const backendUrl =
   import.meta.env.VITE_BACKEND_URL ||
   "https://soulsync-chat-app-backend.onrender.com";
 
-// axios base URL
 axios.defaults.baseURL = backendUrl;
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
+
   const [token, setToken] = useState(localStorage.getItem("token"));
   const [authUser, setAuthUser] = useState(null);
   const [onlineUsers, setOnlineUsers] = useState([]);
@@ -21,18 +21,21 @@ export const AuthProvider = ({ children }) => {
   // CHECK AUTH
   const checkAuth = async () => {
     try {
+      if (!token) return;
+
       const { data } = await axios.get("/api/auth/check", {
-        headers: {
-          token,
-        },
+        headers: { token }
       });
 
       if (data.success) {
         setAuthUser(data.user);
         connectSocket(data.user);
+      } else {
+        setAuthUser(null);
       }
     } catch (error) {
-      console.log(error);
+      console.log(error.message);
+      setAuthUser(null);
     }
   };
 
@@ -47,10 +50,10 @@ export const AuthProvider = ({ children }) => {
       if (data.success) {
         setAuthUser(data.user);
 
-        axios.defaults.headers.common["token"] = data.token;
-
         setToken(data.token);
         localStorage.setItem("token", data.token);
+
+        axios.defaults.headers.common["token"] = data.token;
 
         connectSocket(data.user);
 
@@ -65,17 +68,24 @@ export const AuthProvider = ({ children }) => {
 
   // LOGOUT
   const logout = () => {
-    localStorage.removeItem("token");
+    try {
+      localStorage.removeItem("token");
 
-    setToken(null);
-    setAuthUser(null);
-    setOnlineUsers([]);
+      setToken(null);
+      setAuthUser(null);
+      setOnlineUsers([]);
 
-    delete axios.defaults.headers.common["token"];
+      delete axios.defaults.headers.common["token"];
 
-    socket?.disconnect();
+      if (socket) {
+        socket.disconnect();
+        setSocket(null);
+      }
 
-    toast.success("Logged out successfully");
+      toast.success("Logged out successfully");
+    } catch (error) {
+      console.log(error.message);
+    }
   };
 
   // UPDATE PROFILE
@@ -99,15 +109,15 @@ export const AuthProvider = ({ children }) => {
   const connectSocket = (userData) => {
     if (!userData?._id) return;
 
-    // already connected
+    // prevent duplicate sockets
     if (socket?.connected) return;
 
     const newSocket = io(backendUrl, {
       query: {
-        userId: userData._id,
+        userId: userData._id
       },
       transports: ["websocket"],
-      withCredentials: true,
+      withCredentials: true
     });
 
     newSocket.on("connect", () => {
@@ -118,9 +128,14 @@ export const AuthProvider = ({ children }) => {
       setOnlineUsers(userIds);
     });
 
+    newSocket.on("disconnect", () => {
+      console.log("Socket disconnected");
+    });
+
     setSocket(newSocket);
   };
 
+  // INIT AUTH
   useEffect(() => {
     if (token) {
       axios.defaults.headers.common["token"] = token;
@@ -135,7 +150,7 @@ export const AuthProvider = ({ children }) => {
     socket,
     login,
     logout,
-    updateProfile,
+    updateProfile
   };
 
   return (

@@ -170,3 +170,51 @@ export const sendMessage = async (req, res) => {
         });
     }
 };
+
+export const deleteMessage = async (req, res) => {
+  try {
+
+    const messageId = req.params.id;
+    const userId = req.user._id;
+
+    const message = await Message.findById(messageId);
+
+    if (!message) {
+      return res.json({
+        success: false,
+        message: "Message not found"
+      });
+    }
+
+    // ✅ only sender can delete
+    if (message.senderId.toString() !== userId.toString()) {
+      return res.json({
+        success: false,
+        message: "Not allowed"
+      });
+    }
+
+    // 🗑️ delete message
+    await Message.findByIdAndDelete(messageId);
+
+    // ⚡ real-time update (optional but powerful)
+    const receiverSocketId = userSocketMap[message.receiverId];
+
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit("deleteMessage", messageId);
+    }
+
+    res.json({
+      success: true,
+      message: "Message deleted"
+    });
+
+  } catch (error) {
+    console.log(error.message);
+
+    res.json({
+      success: false,
+      message: error.message
+    });
+  }
+};
