@@ -14,7 +14,6 @@ const ChatContainer = () => {
     setSelectedUser,
     sendMessage,
     getMessages,
-    editMessage,
     deleteMessage
   } = useContext(ChatContext)
 
@@ -24,10 +23,10 @@ const ChatContainer = () => {
   const isSendingRef = useRef(false)
 
   const [input, setInput] = useState('')
-  const [editingId, setEditingId] = useState(null)
 
   // ================= SEND =================
   const handleSendMessage = async (e) => {
+
     e?.preventDefault()
 
     if (isSendingRef.current) return
@@ -37,36 +36,27 @@ const ChatContainer = () => {
 
     try {
 
-      if (editingId) {
-
-        await editMessage(editingId, input.trim())
-        setEditingId(null)
-
-      } else {
-
-        await sendMessage({ text: input.trim() })
-      }
+      await sendMessage({ text: input.trim() })
 
       setInput("")
 
     } catch (err) {
+
       toast.error("Message failed")
+
     } finally {
+
       isSendingRef.current = false
     }
   }
 
-  // ================= CANCEL EDIT =================
-  const cancelEdit = () => {
-    setEditingId(null)
-    setInput("")
-  }
-
   // ================= IMAGE =================
   const handleSendImage = async (e) => {
+
     const file = e.target.files[0]
 
     if (!file || !file.type.startsWith("image/")) {
+
       toast.error("Select an image file")
       return
     }
@@ -74,6 +64,7 @@ const ChatContainer = () => {
     const reader = new FileReader()
 
     reader.onloadend = async () => {
+
       if (isSendingRef.current) return
 
       isSendingRef.current = true
@@ -81,6 +72,7 @@ const ChatContainer = () => {
       await sendMessage({ image: reader.result })
 
       isSendingRef.current = false
+
       e.target.value = ""
     }
 
@@ -89,12 +81,20 @@ const ChatContainer = () => {
 
   // ================= LOAD MESSAGES =================
   useEffect(() => {
-    if (selectedUser) getMessages(selectedUser._id)
+
+    if (selectedUser) {
+      getMessages(selectedUser._id)
+    }
+
   }, [selectedUser])
 
   // ================= AUTO SCROLL =================
   useEffect(() => {
-    scrollEnd.current?.scrollIntoView({ behavior: "smooth" })
+
+    scrollEnd.current?.scrollIntoView({
+      behavior: "smooth"
+    })
+
   }, [messages])
 
   return selectedUser ? (
@@ -109,13 +109,21 @@ const ChatContainer = () => {
           <img
             src={selectedUser?.profilePic || assets.avatar_icon}
             className="header-avatar"
+            alt=""
           />
 
           <div className="header-user-info">
+
             <p>{selectedUser.fullName}</p>
+
             <span className="status-text">
-              {onlineUsers.includes(selectedUser._id) ? "Online" : "Offline"}
+              {
+                onlineUsers.includes(selectedUser._id)
+                  ? "Online"
+                  : "Offline"
+              }
             </span>
+
           </div>
 
         </div>
@@ -154,31 +162,37 @@ const ChatContainer = () => {
 
                 {/* CONTENT */}
                 {message.image ? (
-                  <img src={message.image} className="msg-img" />
+
+                  <img
+                    src={message.image}
+                    className="msg-img"
+                    alt=""
+                  />
+
                 ) : (
-                  <p className="msg-text">{message.text}</p>
+
+                  <p className="msg-text">
+                    {message.text}
+                  </p>
+
                 )}
 
-                {/* ACTIONS */}
+                {/* DELETE BUTTON */}
                 {isSender && (
+
                   <div className="msg-actions">
 
                     <button
-                      onClick={() => {
-                        setInput(message.text)
-                        setEditingId(message._id)
-                      }}
+                      onClick={() => deleteMessage(message._id)}
                     >
-                      ✏️
-                    </button>
-
-                    <button onClick={() => deleteMessage(message._id)}>
                       🗑
                     </button>
 
                   </div>
+
                 )}
 
+                {/* FOOTER */}
                 <div className="msg-footer">
 
                   <img
@@ -188,6 +202,7 @@ const ChatContainer = () => {
                         : selectedUser?.profilePic || assets.avatar_icon
                     }
                     className="msg-profile"
+                    alt=""
                   />
 
                   <p className="msg-time">
@@ -213,21 +228,15 @@ const ChatContainer = () => {
 
           <input
             type="text"
-            placeholder={editingId ? "Edit message..." : "Type a message..."}
+            placeholder="Type a message..."
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === "Enter") handleSendMessage(e)
-              if (e.key === "Escape") cancelEdit()
+              if (e.key === "Enter") {
+                handleSendMessage(e)
+              }
             }}
           />
-
-          {/* cancel edit button */}
-          {editingId && (
-            <button className="cancel-edit" onClick={cancelEdit}>
-              ✖
-            </button>
-          )}
 
           <input
             type="file"
@@ -237,13 +246,13 @@ const ChatContainer = () => {
           />
 
           <label htmlFor="image">
-            <img src={assets.gallery_icon} />
+            <img src={assets.gallery_icon} alt="" />
           </label>
 
         </div>
 
         <button onClick={handleSendMessage}>
-          <img src={assets.send_button} />
+          <img src={assets.send_button} alt="" />
         </button>
 
       </div>
@@ -253,11 +262,16 @@ const ChatContainer = () => {
   ) : (
 
     <div className="welcome-screen">
-      <img src={assets.logo_icon} />
-      <p>SoulSync: Connect Beyond Words</p>
+
+      <img src={assets.logo_icon} alt="" />
+
+      <p>
+        SoulSync: Connect Beyond Words
+      </p>
+
     </div>
 
   )
 }
 
-export default ChatContainer;
+export default ChatContainer
