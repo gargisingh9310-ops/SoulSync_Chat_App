@@ -24,18 +24,28 @@ const ChatContainer = () => {
   const scrollEnd = useRef()
 
   const [input, setInput] = useState('')
+  const [sending, setSending] = useState(false) // ✅ LOCK ADDED
 
   // SEND TEXT MESSAGE
   const handleSendMessage = async (e) => {
-    e.preventDefault()
+    e?.preventDefault()
 
+    if (sending) return // ❌ prevent double click
     if (input.trim() === "") return
 
-    await sendMessage({
-      text: input.trim()
-    })
+    try {
+      setSending(true)
 
-    setInput("")
+      await sendMessage({
+        text: input.trim()
+      })
+
+      setInput("")
+    } catch (err) {
+      toast.error("Message failed")
+    } finally {
+      setSending(false)
+    }
   }
 
   // SEND IMAGE
@@ -51,10 +61,15 @@ const ChatContainer = () => {
     const reader = new FileReader()
 
     reader.onloadend = async () => {
+      if (sending) return // extra safety
+
+      setSending(true)
+
       await sendMessage({
         image: reader.result
       })
 
+      setSending(false)
       e.target.value = ""
     }
 
@@ -94,9 +109,7 @@ const ChatContainer = () => {
 
           <div className="header-user-info">
 
-            <p>
-              {selectedUser.fullName}
-            </p>
+            <p>{selectedUser.fullName}</p>
 
             <span className="status-text">
               {
@@ -112,10 +125,7 @@ const ChatContainer = () => {
 
         <div className="header-icons">
 
-          <img
-            src={assets.help_icon}
-            alt="help"
-          />
+          <img src={assets.help_icon} alt="help" />
 
           <img
             onClick={() => setSelectedUser(null)}
@@ -201,11 +211,11 @@ const ChatContainer = () => {
             placeholder='Type a message...'
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) =>
-              e.key === "Enter"
-                ? handleSendMessage(e)
-                : null
-            }
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !sending) {
+                handleSendMessage(e)
+              }
+            }}
           />
 
           <input
@@ -216,16 +226,8 @@ const ChatContainer = () => {
             onChange={handleSendImage}
           />
 
-          <label
-            htmlFor="image"
-            className="attachment-label"
-          >
-
-            <img
-              src={assets.gallery_icon}
-              alt="attach"
-            />
-
+          <label htmlFor="image" className="attachment-label">
+            <img src={assets.gallery_icon} alt="attach" />
           </label>
 
         </div>
@@ -233,13 +235,9 @@ const ChatContainer = () => {
         <button
           className="send-button"
           onClick={handleSendMessage}
+          disabled={sending}
         >
-
-          <img
-            src={assets.send_button}
-            alt="send"
-          />
-
+          <img src={assets.send_button} alt="send" />
         </button>
 
       </div>
@@ -256,13 +254,10 @@ const ChatContainer = () => {
         className="welcome-logo"
       />
 
-      <p>
-        SoulSync: Connect Beyond Words
-      </p>
+      <p>SoulSync: Connect Beyond Words</p>
 
     </div>
-
   )
 }
 
-export default ChatContainer;
+export default ChatContainer
