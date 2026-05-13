@@ -1,0 +1,449 @@
+/* =========================
+   RIGHT SIDEBAR
+========================= */
+.right-sidebar {
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+  flex-direction: column;
+
+  padding: 28px 20px;
+
+  position: relative;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  color: white;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255,255,255,0.03),
+      rgba(255,255,255,0.015)
+    );
+
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+/* subtle glow */
+.right-sidebar::before {
+  content: "";
+
+  position: absolute;
+  top: -120px;
+  right: -120px;
+
+  width: 220px;
+  height: 220px;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(102,126,234,0.12),
+      transparent 70%
+    );
+
+  pointer-events: none;
+}
+
+/* =========================
+   PROFILE SECTION
+========================= */
+.rs-profile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  text-align: center;
+
+  margin-bottom: 28px;
+
+  position: relative;
+  z-index: 2;
+}
+
+/* image container */
+.rs-image-container {
+  position: relative;
+
+  margin-bottom: 18px;
+}
+
+/* profile image */
+.rs-profile-img {
+  width: 110px;
+  height: 110px;
+
+  border-radius: 50%;
+
+  object-fit: cover;
+  object-position: top;
+
+  border:
+    3px solid rgba(99,102,241,0.45);
+
+  box-shadow:
+    0 12px 30px rgba(99,102,241,0.22);
+
+  transition: 0.3s ease;
+}
+
+.rs-profile-img:hover {
+  transform: scale(1.04);
+}
+
+/* online dot */
+.rs-online-dot {
+  width: 16px;
+  height: 16px;
+
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+
+  border-radius: 50%;
+
+  background: #4ade80;
+
+  border:
+    3px solid #0f172a;
+
+  box-shadow:
+    0 0 10px rgba(74,222,128,0.7);
+}
+
+/* name */
+.rs-name {
+  font-size: 22px;
+  font-weight: 700;
+
+  color: white;
+
+  margin-bottom: 6px;
+
+  letter-spacing: -0.02em;
+}
+
+/* bio */
+.rs-bio {
+  max-width: 240px;
+
+  font-size: 14px;
+  line-height: 1.6;
+
+  color: rgba(255,255,255,0.65);
+}
+
+/* divider */
+.rs-hr {
+  border: none;
+
+  height: 1px;
+
+  background:
+    linear-gradient(
+      to right,
+      transparent,
+      rgba(255,255,255,0.08),
+      transparent
+    );
+
+  margin-bottom: 26px;
+}
+
+/* =========================
+   MEDIA SECTION
+========================= */
+.rs-media {
+  flex: 1;
+
+  position: relative;
+  z-index: 2;
+}
+
+/* section title */
+.rs-section-title {
+  font-size: 15px;
+  font-weight: 600;
+
+  color: rgba(255,255,255,0.85);
+
+  margin-bottom: 16px;
+
+  letter-spacing: 0.3px;
+}
+
+/* media grid */
+.rs-media-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+
+  gap: 10px;
+}
+
+/* media item */
+.rs-media-item {
+  position: relative;
+
+  aspect-ratio: 1/1;
+
+  overflow: hidden;
+
+  border-radius: 14px;
+
+  cursor: pointer;
+
+  background:
+    rgba(255,255,255,0.04);
+
+  border:
+    1px solid rgba(255,255,255,0.05);
+
+  transition: 0.3s ease;
+}
+
+/* hover effect */
+.rs-media-item:hover {
+  transform: translateY(-3px);
+
+  border-color:
+    rgba(129,140,248,0.3);
+
+  box-shadow:
+    0 10px 20px rgba(0,0,0,0.25);
+}
+
+/* image */
+.rs-media-item img {
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+  object-position: center;
+
+  transition: 0.35s ease;
+}
+
+.rs-media-item:hover img {
+  transform: scale(1.08);
+}
+
+/* image overlay */
+.rs-media-item::after {
+  content: "";
+
+  position: absolute;
+  inset: 0;
+
+  background:
+    linear-gradient(
+      to top,
+      rgba(0,0,0,0.18),
+      transparent
+    );
+
+  opacity: 0;
+
+  transition: 0.3s ease;
+}
+
+.rs-media-item:hover::after {
+  opacity: 1;
+}
+
+/* =========================
+   FOOTER
+========================= */
+.rs-footer {
+  margin-top: 24px;
+
+  position: relative;
+  z-index: 2;
+}
+
+/* logout button */
+.rs-logout-btn {
+  width: 100%;
+
+  border: none;
+  outline: none;
+
+  padding: 14px;
+
+  border-radius: 14px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #667eea,
+      #764ba2
+    );
+
+  color: white;
+
+  font-size: 15px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: 0.3s ease;
+
+  box-shadow:
+    0 12px 28px rgba(102,126,234,0.22);
+}
+
+.rs-logout-btn:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 16px 35px rgba(118,75,162,0.35);
+}
+
+.rs-logout-btn:active {
+  transform: scale(0.97);
+}
+
+/* =========================
+   CUSTOM SCROLLBAR
+========================= */
+.right-sidebar::-webkit-scrollbar {
+  width: 5px;
+}
+
+.right-sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.right-sidebar::-webkit-scrollbar-thumb {
+  background:
+    rgba(255,255,255,0.12);
+
+  border-radius: 20px;
+}
+
+.right-sidebar::-webkit-scrollbar-thumb:hover {
+  background:
+    rgba(255,255,255,0.2);
+}
+
+/* =========================
+   LAPTOP
+========================= */
+@media (max-width: 1200px) {
+
+  .right-sidebar {
+    padding: 24px 18px;
+  }
+
+  .rs-profile-img {
+    width: 95px;
+    height: 95px;
+  }
+
+  .rs-name {
+    font-size: 20px;
+  }
+}
+
+/* =========================
+   TABLET
+========================= */
+@media (max-width: 992px) {
+
+  .right-sidebar {
+    padding: 20px 16px;
+  }
+
+  .rs-media-grid {
+    gap: 8px;
+  }
+}
+
+/* =========================
+   MOBILE
+========================= */
+@media (max-width: 768px) {
+
+  .right-sidebar {
+    padding: 18px 14px;
+  }
+
+  .rs-profile {
+    margin-bottom: 22px;
+  }
+
+  .rs-profile-img {
+    width: 85px;
+    height: 85px;
+  }
+
+  .rs-name {
+    font-size: 18px;
+  }
+
+  .rs-bio {
+    font-size: 13px;
+  }
+
+  .rs-section-title {
+    font-size: 14px;
+  }
+
+  .rs-media-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 7px;
+  }
+
+  .rs-media-item {
+    border-radius: 10px;
+  }
+
+  .rs-logout-btn {
+    padding: 13px;
+    font-size: 14px;
+  }
+}
+
+/* =========================
+   SMALL MOBILE
+========================= */
+@media (max-width: 480px) {
+
+  .right-sidebar {
+    padding: 16px 12px;
+  }
+
+  .rs-profile-img {
+    width: 78px;
+    height: 78px;
+  }
+
+  .rs-online-dot {
+    width: 14px;
+    height: 14px;
+  }
+
+  .rs-name {
+    font-size: 17px;
+  }
+
+  .rs-bio {
+    font-size: 12.5px;
+    line-height: 1.5;
+  }
+
+  .rs-media-grid {
+    gap: 6px;
+  }
+
+  .rs-media-item {
+    border-radius: 8px;
+  }
+
+  .rs-logout-btn {
+    border-radius: 12px;
+  }
+}
